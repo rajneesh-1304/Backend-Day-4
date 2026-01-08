@@ -3,8 +3,7 @@ import userReducer from './slice/slice.js';
 
 const store = configureStore({
     reducer: {
-    weathers: userReducer,
-  },
+weathers: userReducer,    },
 });
 
 export default store;

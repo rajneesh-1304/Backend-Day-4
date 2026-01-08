@@ -6,7 +6,8 @@ import { useSelector, useDispatch } from 'react-redux'
 import { fetchData } from '../../redux/slice/slice.js'
 import CircularProgress from '@mui/material/CircularProgress';
 import { toast } from 'react-toastify';
-import { LinearProgress } from '@mui/material';
+import { fetchWeatherThunk } from '../../redux/slice/weatherThunk';
+
 
 const Weather = () => {
     const date = new Date();
@@ -24,21 +25,21 @@ const Weather = () => {
     const sample = useSelector((state) => state.weathers.weathers);
 
     const weatherData = async () => {
-        try {
-            if(locations === ''){
-                return;
-            }else{
+    try {
+        if (locations === '') {
             setLoading(true);
-            const response = await axios.get(`https://api.openweathermap.org/data/2.5/weather?q=${locations}&appid=b59f570a0d07270949c8dc6fe81e0a8d`);
-            console.log(response.data)
-            dispatch(fetchData(response.data));
+            await dispatch(fetchWeatherThunk('New Delhi'));
             setLoading(false);
-            }
-
-        } catch (error) {
-            toast.error(`${locations} is invalid Location`)
+        } else {
+            setLoading(true);
+            await dispatch(fetchWeatherThunk(locations));
+            setLoading(false);
         }
+    } catch (error) {
+        toast.error(`${locations} is invalid Location`);
+        setLoading(false);
     }
+};
 
     useEffect(() => {
         const debounceTimer = setTimeout(() => {
@@ -62,10 +63,8 @@ const Weather = () => {
                 <h4 >{day}, {presentDate} {month}</h4>
                 <h1 className='time2'>{currTime}</h1>
             </div>
-            <CircularProgress value={loading}/>
 
-            {
-                loading ? (<h1>Loading...</h1>) : (  <div>
+            {         loading ? (<CircularProgress/>) : (  <div>
                 <div className='img'>
                 <div>
                     
